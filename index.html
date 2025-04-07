@@ -8,9 +8,8 @@
     <style>
         body {
             margin: 0;
-            min-height: 150vh;
             padding: 20px;
-            height: 100vh;
+            min-height: 150vh; /* Aumentou a altura mínima da página */
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
@@ -54,7 +53,7 @@
 
         .square {
             width: 175px; /* Reduziu largura dos quadrados */
-            height: 200px; /* Reduziu a altura dos quadrados */
+            height: 270px; /* Aumentou a altura dos quadrados */
             background-color: #d3d3d3;
             border: 2px solid white;
             display: flex;
@@ -65,7 +64,7 @@
             box-sizing: border-box;
             position: relative;
             margin: 10px; /* Ajuste a margem */
-            border-raidus: 30px;
+            border-radius: 30px;
         }
 
         .square img {
@@ -86,11 +85,31 @@
 
         .item-controls {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: space-between;
+            justify-content: center;
             gap: 5px;
             margin-top: 10px; /* Espaço entre descrição e controles */
             width: 100%;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .quantity-controls button {
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 3px 7px;
+            border-radius: 5px;
+        }
+
+        .quantity-controls button.remove {
+            background-color: #f44336;
         }
 
         .item-controls input {
@@ -98,23 +117,28 @@
             text-align: center;
         }
 
-        .add-to-cart, .remove-from-cart {
+        .add-to-cart, .remove-from-cart, .remove-all {
             cursor: pointer;
             background-color: #4CAF50;
             color: white;
             border: none;
-            padding: 3px 7px; /* Diminuiu o tamanho dos botões */
+            padding: 3px 7px;
             border-radius: 5px;
+            width: 100%;
         }
 
-        .remove-from-cart {
+        .remove-from-cart, .remove-all {
             background-color: #f44336;
-            margin-left: auto; /* Move o botão "Remover" para a direita dentro do quadrado */
+            margin-top: 5px;
+        }
+
+        .remove-all {
+            margin-top: 5px;
         }
 
         .cart {
             position: fixed;
-            bottom: 20px;
+            bottom: 100px;
             right: 20px;
             background-color: black;
             border: 2px solid #d3d3d3;
@@ -128,7 +152,7 @@
         }
 
         .cart img {
-            width: 60px;
+            width: 100px;
             height: auto;
         }
 
@@ -154,11 +178,25 @@
             updateCart();
         }
 
-        function removeFromCart(name) {
+        function removeFromCart(name, quantity, inputId) {
+            const itemIndex = cart.findIndex(item => item.name === name);
+            if (itemIndex > -1) {
+                cart[itemIndex].quantity -= parseInt(quantity);
+                if (cart[itemIndex].quantity <= 0) {
+                    cart.splice(itemIndex, 1);
+                }
+                const input = document.getElementById(inputId);
+                input.value = Math.max(parseInt(input.value) - quantity, 0); // Diminui o número de itens selecionados sem ficar negativo
+            }
+            updateCart();
+        }
+
+        function removeAllFromCart(name, inputId) {
             const itemIndex = cart.findIndex(item => item.name === name);
             if (itemIndex > -1) {
                 cart.splice(itemIndex, 1);
             }
+            document.getElementById(inputId).value = 0; // Muda o número de itens selecionados para zero
             updateCart();
         }
 
@@ -187,6 +225,18 @@
             const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
             window.open(whatsappURL, '_blank');
         }
+
+        function increaseQuantity(id) {
+            const input = document.getElementById(id);
+            input.value = parseInt(input.value) + 1;
+        }
+
+        function decreaseQuantity(id) {
+            const input = document.getElementById(id);
+            if (parseInt(input.value) > 0) {
+                input.value = parseInt(input.value) - 1;
+            }
+        }
     </script>
 </head>
 <body>
@@ -202,9 +252,14 @@
                     <p class="item-price"><strong>R$8,00</strong></p>
                 </div>
                 <div class="item-controls">
-                    <button class="add-to-cart" onclick="addToCart('Coxinhas', 8.00, document.getElementById('coxinha-quantity').value)">Add</button>
-                    <input type="number" id="coxinha-quantity" value="0" min="0">
-                    <button class="remove-from-cart" onclick="removeFromCart('Coxinhas')">Remove</button>
+                    <div class="quantity-controls">
+                        <button onclick="decreaseQuantity('coxinha-quantity')">-</button>
+                        <input type="number" id="coxinha-quantity" value="0" min="0">
+                        <button onclick="increaseQuantity('coxinha-quantity')">+</button>
+                    </div>
+                    <button class="add-to-cart" onclick="addToCart('Coxinhas', 8.00, document.getElementById('coxinha-quantity').value)">Adicionar</button>
+                    <button class="remove-from-cart" onclick="removeFromCart('Coxinhas', 1, 'coxinha-quantity')">Remover</button>
+                    <button class="remove-all" onclick="removeAllFromCart('Coxinhas', 'coxinha-quantity')">Remover Todos</button>
                 </div>
             </div>
             <div class="square">
@@ -214,9 +269,14 @@
                     <p class="item-price"><strong>R$8,00</strong></p>
                 </div>
                 <div class="item-controls">
-                    <button class="add-to-cart" onclick="addToCart('Rissoles', 8.00, document.getElementById('rissoles-quantity').value)">Add</button>
-                    <input type="number" id="rissoles-quantity" value="0" min="0">
-                    <button class="remove-from-cart" onclick="removeFromCart('Rissoles')">Remove</button>
+                    <div class="quantity-controls">
+                        <button onclick="decreaseQuantity('rissoles-quantity')">-</button>
+                        <input type="number" id="rissoles-quantity" value="0" min="0">
+                        <button onclick="increaseQuantity('rissoles-quantity')">+</button>
+                    </div>
+                    <button class="add-to-cart" onclick="addToCart('Rissoles', 8.00, document.getElementById('rissoles-quantity').value)">Adicionar</button>
+                    <button class="remove-from-cart" onclick="removeFromCart('Rissoles', 1, 'rissoles-quantity')">Remover</button>
+                    <button class="remove-all" onclick="removeAllFromCart('Rissoles', 'rissoles-quantity')">Remover Todos</button>
                 </div>
             </div>
             <div class="square">
@@ -226,9 +286,14 @@
                     <p class="item-price"><strong>R$8,00</strong></p>
                 </div>
                 <div class="item-controls">
-                    <button class="add-to-cart" onclick="addToCart('Bolinho de Carne', 8.00, document.getElementById('bolinho-quantity').value)">Add</button>
-                    <input type="number" id="bolinho-quantity" value="0" min="0">
-                    <button class="remove-from-cart" onclick="removeFromCart('Bolinho de Carne')">Remove</button>
+                    <div class="quantity-controls">
+                        <button onclick="decreaseQuantity('bolinho-quantity')">-</button>
+                        <input type="number" id="bolinho-quantity" value="0" min="0">
+                        <button onclick="increaseQuantity('bolinho-quantity')">+</button>
+                    </div>
+                    <button class="add-to-cart" onclick="addToCart('Bolinho de Carne', 8.00, document.getElementById('bolinho-quantity').value)">Adicionar</button>
+                    <button class="remove-from-cart" onclick="removeFromCart('Bolinho de Carne', 1, 'bolinho-quantity')">Remover</button>
+                    <button class="remove-all" onclick="removeAllFromCart('Bolinho de Carne', 'bolinho-quantity')">Remover Todos</button>
                 </div>
             </div>
             <div class="square">
@@ -238,9 +303,14 @@
                     <p class="item-price"><strong>R$9,00</strong></p>
                 </div>
                 <div class="item-controls">
-                    <button class="add-to-cart" onclick="addToCart('Espetinho', 9.00, document.getElementById('espetinho-quantity').value)">Add</button>
-                    <input type="number" id="espetinho-quantity" value="0" min="0">
-                    <button class="remove-from-cart" onclick="removeFromCart('Espetinho')">Remove</button>
+                    <div class="quantity-controls">
+                        <button onclick="decreaseQuantity('espetinho-quantity')">-</button>
+                        <input type="number" id="espetinho-quantity" value="0" min="0">
+                        <button onclick="increaseQuantity('espetinho-quantity')">+</button>
+                    </div>
+                    <button class="add-to-cart" onclick="addToCart('Espetinho', 9.00, document.getElementById('espetinho-quantity').value)">Adicionar</button>
+                    <button class="remove-from-cart" onclick="removeFromCart('Espetinho', 1, 'espetinho-quantity')">Remover</button>
+                    <button class="remove-all" onclick="removeAllFromCart('Espetinho', 'espetinho-quantity')">Remover Todos</button>
                 </div>
             </div>
         </div>
@@ -252,9 +322,14 @@
                     <p class="item-price"><strong>R$8,00</strong></p>
                 </div>
                 <div class="item-controls">
-                    <button class="add-to-cart" onclick="addToCart('Pasteis', 8.00, document.getElementById('pastel-quantity').value)">Add</button>
-                    <input type="number" id="pastel-quantity" value="0" min="0">
-                    <button class="remove-from-cart" onclick="removeFromCart('Pasteis')">Remove</button>
+                    <div class="quantity-controls">
+                        <button onclick="decreaseQuantity('pastel-quantity')">-</button>
+                        <input type="number" id="pastel-quantity" value="0" min="0">
+                        <button onclick="increaseQuantity('pastel-quantity')">+</button>
+                    </div>
+                    <button class="add-to-cart" onclick="addToCart('Pasteis', 8.00, document.getElementById('pastel-quantity').value)">Adicionar</button>
+                    <button class="remove-from-cart" onclick="removeFromCart('Pasteis', 1, 'pastel-quantity')">Remover</button>
+                    <button class="remove-all" onclick="removeAllFromCart('Pasteis', 'pastel-quantity')">Remover Todos</button>
                 </div>
             </div>
             <div class="square">
@@ -264,9 +339,14 @@
                     <p class="item-price"><strong>R$8,00</strong></p>
                 </div>
                 <div class="item-controls">
-                    <button class="add-to-cart" onclick="addToCart('Enroladinhos', 8.00, document.getElementById('enroladinhos-quantity').value)">Add</button>
-                    <input type="number" id="enroladinhos-quantity" value="0" min="0">
-                    <button class="remove-from-cart" onclick="removeFromCart('Enroladinhos')">Remove</button>
+                    <div class="quantity-controls">
+                        <button onclick="decreaseQuantity('enroladinhos-quantity')">-</button>
+                        <input type="number" id="enroladinhos-quantity" value="0" min="0">
+                        <button onclick="increaseQuantity('enroladinhos-quantity')">+</button>
+                    </div>
+                    <button class="add-to-cart" onclick="addToCart('Enroladinhos', 8.00, document.getElementById('enroladinhos-quantity').value)">Adicionar</button>
+                    <button class="remove-from-cart" onclick="removeFromCart('Enroladinhos', 1, 'enroladinhos-quantity')">Remover</button>
+                    <button class="remove-all" onclick="removeAllFromCart('Enroladinhos', 'enroladinhos-quantity')">Remover Todos</button>
                 </div>
             </div>
             <div class="square">
@@ -276,9 +356,14 @@
                     <p class="item-price"><strong>R$5,00</strong></p>
                 </div>
                 <div class="item-controls">
-                    <button class="add-to-cart" onclick="addToCart('Empanado', 5.00, document.getElementById('empanado-quantity').value)">Add</button>
-                    <input type="number" id="empanado-quantity" value="0" min="0">
-                    <button class="remove-from-cart" onclick="removeFromCart('Empanado')">Remove</button>
+                    <div class="quantity-controls">
+                        <button onclick="decreaseQuantity('empanado-quantity')">-</button>
+                        <input type="number" id="empanado-quantity" value="0" min="0">
+                        <button onclick="increaseQuantity('empanado-quantity')">+</button>
+                    </div>
+                    <button class="add-to-cart" onclick="addToCart('Empanado', 5.00, document.getElementById('empanado-quantity').value)">Adicionar</button>
+                    <button class="remove-from-cart" onclick="removeFromCart('Empanado', 1, 'empanado-quantity')">Remover</button>
+                    <button class="remove-all" onclick="removeAllFromCart('Empanado', 'empanado-quantity')">Remover Todos</button>
                 </div>
             </div>
             <div class="square">
@@ -288,9 +373,14 @@
                     <p class="item-price"><strong>R$3,00</strong></p>
                 </div>
                 <div class="item-controls">
-                    <button class="add-to-cart" onclick="addToCart('Pão de Queijo', 3.00, document.getElementById('pao-de-queijo-quantity').value)">Add</button>
-                    <input type="number" id="pao-de-queijo-quantity" value="0" min="0">
-                    <button class="remove-from-cart" onclick="removeFromCart('Pão de Queijo')">Remove</button>
+                    <div class="quantity-controls">
+                        <button onclick="decreaseQuantity('pao-de-queijo-quantity')">-</button>
+                        <input type="number" id="pao-de-queijo-quantity" value="0" min="0">
+                        <button onclick="increaseQuantity('pao-de-queijo-quantity')">+</button>
+                    </div>
+                    <button class="add-to-cart" onclick="addToCart('Pão de Queijo', 3.00, document.getElementById('pao-de-queijo-quantity').value)">Adicionar</button>
+                    <button class="remove-from-cart" onclick="removeFromCart('Pão de Queijo', 1, 'pao-de-queijo-quantity')">Remover</button>
+                    <button class="remove-all" onclick="removeAllFromCart('Pão de Queijo', 'pao-de-queijo-quantity')">Remover Todos</button>
                 </div>
             </div>
         </div>
