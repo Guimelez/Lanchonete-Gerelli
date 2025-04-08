@@ -251,6 +251,16 @@
         <h1><span class="white-text">Lanchonete</span> <span class="red-text">Gerelli</span></h1>
     </header>
     <main>
+        <div class="tabs">
+    <button class="tab active" onclick="openTab(event, 'lanches')">Lanches</button>
+    <button class="tab" onclick="openTab(event, 'bebidas')">Bebidas</button>
+</div>
+<main id="lanches" class="active">
+    <!-- Conteúdo da aba Lanches -->
+</main>
+<main id="bebidas">
+    <!-- Conteúdo da aba Bebidas -->
+</main>
         <div class="column">
             <div class="square">
                 <img src="Imagens/coxinha.jpg" alt="Coxinha de Frango">
@@ -391,6 +401,7 @@
                 </div>
             </div>
         </div>
+        
     </main>
     <div class="cart" onclick="sendWhatsApp()">
         <img src="Imagens/carrinho.jpg" alt="Carrinho de Compras">
