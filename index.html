@@ -104,7 +104,7 @@
             background-color: #4CAF50;
             color: white;
             border: none;
-            padding: 3px 7px;
+            padding: 5px 9px; /* Aumentou o tamanho dos botões em 2px */
             border-radius: 5px;
         }
 
@@ -122,7 +122,7 @@
             background-color: #4CAF50;
             color: white;
             border: none;
-            padding: 3px 7px;
+            padding: 5px 9px; /* Aumentou o tamanho dos botões em 2px */
             border-radius: 5px;
             width: 100%;
         }
@@ -157,7 +157,7 @@
         }
 
         .total-price {
-            margin-left: 20px; /* Aumentou a margem à esquerda para separar do carrinho */
+            margin-left: 10px;
             text-align: center;
             font-size: 0.8em; /* Menor tamanho de fonte */
             font-weight: bold;
@@ -237,6 +237,13 @@
                 input.value = parseInt(input.value) - 1;
             }
         }
+
+        function validateQuantity(input) {
+            input.value = input.value.replace(/[^\d]/, '');
+            if (parseInt(input.value) < 0 || isNaN(input.value)) {
+                input.value = 0;
+            }
+        }
     </script>
 </head>
 <body>
@@ -254,7 +261,7 @@
                 <div class="item-controls">
                     <div class="quantity-controls">
                         <button onclick="decreaseQuantity('coxinha-quantity')">-</button>
-                        <input type="number" id="coxinha-quantity" value="0" min="0">
+                        <input type="number" id="coxinha-quantity" value="0" min="0" oninput="validateQuantity(this)">
                         <button onclick="increaseQuantity('coxinha-quantity')">+</button>
                     </div>
                     <button class="add-to-cart" onclick="addToCart('Coxinhas', 8.00, document.getElementById('coxinha-quantity').value)">Adicionar</button>
@@ -271,7 +278,7 @@
                 <div class="item-controls">
                     <div class="quantity-controls">
                         <button onclick="decreaseQuantity('rissoles-quantity')">-</button>
-                        <input type="number" id="rissoles-quantity" value="0" min="0">
+                        <input type="number" id="rissoles-quantity" value="0" min="0" oninput="validateQuantity(this)">
                         <button onclick="increaseQuantity('rissoles-quantity')">+</button>
                     </div>
                     <button class="add-to-cart" onclick="addToCart('Rissoles', 8.00, document.getElementById('rissoles-quantity').value)">Adicionar</button>
@@ -288,7 +295,7 @@
                 <div class="item-controls">
                     <div class="quantity-controls">
                         <button onclick="decreaseQuantity('bolinho-quantity')">-</button>
-                        <input type="number" id="bolinho-quantity" value="0" min="0">
+                        <input type="number" id="bolinho-quantity" value="0" min="0" oninput="validateQuantity(this)">
                         <button onclick="increaseQuantity('bolinho-quantity')">+</button>
                     </div>
                     <button class="add-to-cart" onclick="addToCart('Bolinho de Carne', 8.00, document.getElementById('bolinho-quantity').value)">Adicionar</button>
@@ -305,7 +312,7 @@
                 <div class="item-controls">
                     <div class="quantity-controls">
                         <button onclick="decreaseQuantity('espetinho-quantity')">-</button>
-                        <input type="number" id="espetinho-quantity" value="0" min="0">
+                        <input type="number" id="espetinho-quantity" value="0" min="0" oninput="validateQuantity(this)">
                         <button onclick="increaseQuantity('espetinho-quantity')">+</button>
                     </div>
                     <button class="add-to-cart" onclick="addToCart('Espetinho', 9.00, document.getElementById('espetinho-quantity').value)">Adicionar</button>
@@ -324,7 +331,7 @@
                 <div class="item-controls">
                     <div class="quantity-controls">
                         <button onclick="decreaseQuantity('pastel-quantity')">-</button>
-                        <input type="number" id="pastel-quantity" value="0" min="0">
+                        <input type="number" id="pastel-quantity" value="0" min="0" oninput="validateQuantity(this)">
                         <button onclick="increaseQuantity('pastel-quantity')">+</button>
                     </div>
                     <button class="add-to-cart" onclick="addToCart('Pasteis', 8.00, document.getElementById('pastel-quantity').value)">Adicionar</button>
@@ -341,7 +348,7 @@
                 <div class="item-controls">
                     <div class="quantity-controls">
                         <button onclick="decreaseQuantity('enroladinhos-quantity')">-</button>
-                        <input type="number" id="enroladinhos-quantity" value="0" min="0">
+                        <input type="number" id="enroladinhos-quantity" value="0" min="0" oninput="validateQuantity(this)">
                         <button onclick="increaseQuantity('enroladinhos-quantity')">+</button>
                     </div>
                     <button class="add-to-cart" onclick="addToCart('Enroladinhos', 8.00, document.getElementById('enroladinhos-quantity').value)">Adicionar</button>
@@ -358,7 +365,7 @@
                 <div class="item-controls">
                     <div class="quantity-controls">
                         <button onclick="decreaseQuantity('empanado-quantity')">-</button>
-                        <input type="number" id="empanado-quantity" value="0" min="0">
+                        <input type="number" id="empanado-quantity" value="0" min="0" oninput="validateQuantity(this)">
                         <button onclick="increaseQuantity('empanado-quantity')">+</button>
                     </div>
                     <button class="add-to-cart" onclick="addToCart('Empanado', 5.00, document.getElementById('empanado-quantity').value)">Adicionar</button>
@@ -375,7 +382,7 @@
                 <div class="item-controls">
                     <div class="quantity-controls">
                         <button onclick="decreaseQuantity('pao-de-queijo-quantity')">-</button>
-                        <input type="number" id="pao-de-queijo-quantity" value="0" min="0">
+                        <input type="number" id="pao-de-queijo-quantity" value="0" min="0" oninput="validateQuantity(this)">
                         <button onclick="increaseQuantity('pao-de-queijo-quantity')">+</button>
                     </div>
                     <button class="add-to-cart" onclick="addToCart('Pão de Queijo', 3.00, document.getElementById('pao-de-queijo-quantity').value)">Adicionar</button>
@@ -387,11 +394,4 @@
     </main>
     <div class="cart" onclick="sendWhatsApp()">
         <img src="Imagens/carrinho.jpg" alt="Carrinho de Compras">
-        <div class="total-price" id="total-price">Total: R$0.00</div>
-    </div>
-    <p></p>
-    <p></p>
-    <p></p>
-    <p></p>
-</body>
-</html>
+        <div class="total-price" id="total-price">Total: R$0
