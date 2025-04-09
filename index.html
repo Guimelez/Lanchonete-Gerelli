@@ -9,7 +9,7 @@
         body {
             margin: 0;
             padding: 20px;
-            min-height: 150vh; /* Aumentou a altura mínima da página */
+            min-height: 200vh; /* Aumenta a altura mínima da página */
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
@@ -38,22 +38,25 @@
             color: red;
         }
 
-        main {
-            display: flex;
-            justify-content: center;
-            gap: 16px; /* Diminuir o espaço entre os quadrados em 2px */
-            padding: 10px;
+        .divider {
+            width: 100%;
+            height: 2px;
+            background-color: white;
+            margin: 20px 0;
         }
 
-        .column {
-            display: flex;
-            flex-direction: column;
-            gap: 16px; /* Diminuir o espaço entre os quadrados em 2px */
+        main {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* 2 colunas */
+            gap: 16px; /* Espaço entre os quadrados */
+            padding: 10px;
+            width: 100%;
+            justify-content: center;
         }
 
         .square {
-            width: 175px; /* Reduziu largura dos quadrados */
-            height: 290px; /* Aumentou a altura dos quadrados */
+            width: 175px;
+            height: 290px;
             background-color: #d3d3d3;
             border: 2px solid white;
             display: flex;
@@ -63,12 +66,12 @@
             padding: 10px;
             box-sizing: border-box;
             position: relative;
-            margin: 10px; /* Ajuste a margem */
+            margin: 10px;
             border-radius: 30px;
         }
 
         .square img {
-            width: 80%; /* Reduziu o tamanho das imagens dentro dos quadrados */
+            width: 80%;
             height: auto;
             flex-shrink: 0;
             border-radius: 10px;
@@ -80,23 +83,14 @@
 
         .item-description p {
             margin: 5px 0;
-            font-size: 14px; /* Aumentou o tamanho da fonte */
-        }
-
-        .item-controls {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-            margin-top: 10px; /* Espaço entre descrição e controles */
-            width: 100%;
+            font-size: 14px;
         }
 
         .quantity-controls {
             display: flex;
             align-items: center;
             gap: 5px;
+            margin-top: 10px;
         }
 
         .quantity-controls button {
@@ -104,7 +98,7 @@
             background-color: #4CAF50;
             color: white;
             border: none;
-            padding: 5px 9px; /* Aumentou o tamanho dos botões em 2px */
+            padding: 5px 9px;
             border-radius: 5px;
         }
 
@@ -112,28 +106,12 @@
             background-color: #f44336;
         }
 
-        .item-controls input {
-            width: 40px;
+        .quantity-display {
+            font-size: 16px;
+            font-weight: bold;
+            color: black;
+            min-width: 20px;
             text-align: center;
-        }
-
-        .add-to-cart, .remove-from-cart, .remove-all {
-            cursor: pointer;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 5px 9px; /* Aumentou o tamanho dos botões em 2px */
-            border-radius: 5px;
-            width: 100%;
-        }
-
-        .remove-from-cart, .remove-all {
-            background-color: #f44336;
-            margin-top: 5px;
-        }
-
-        .remove-all {
-            margin-top: 5px;
         }
 
         .cart {
@@ -152,14 +130,14 @@
         }
 
         .cart img {
-            width: 90px; /* Aumentou a largura da imagem do carrinho */
+            width: 90px;
             height: auto;
         }
 
         .total-price {
             margin-left: 10px;
             text-align: center;
-            font-size: 0.9em; /* Menor tamanho de fonte */
+            font-size: 0.9em;
             font-weight: bold;
             color: white;
         }
@@ -167,37 +145,34 @@
     <script>
         let cart = [];
 
-        function addToCart(name, price, quantity) {
+        function addToCart(name, price, displayId) {
             const itemIndex = cart.findIndex(item => item.name === name);
             if (itemIndex > -1) {
-                cart[itemIndex].quantity += parseInt(quantity);
+                cart[itemIndex].quantity += 1;
             } else {
-                const item = { name, price, quantity: parseInt(quantity) };
+                const item = { name, price, quantity: 1 };
                 cart.push(item);
             }
+            updateQuantityDisplay(name, displayId);
             updateCart();
         }
 
-        function removeFromCart(name, quantity, inputId) {
+        function removeFromCart(name, displayId) {
             const itemIndex = cart.findIndex(item => item.name === name);
             if (itemIndex > -1) {
-                cart[itemIndex].quantity -= parseInt(quantity);
+                cart[itemIndex].quantity -= 1;
                 if (cart[itemIndex].quantity <= 0) {
                     cart.splice(itemIndex, 1);
                 }
-                const input = document.getElementById(inputId);
-                input.value = Math.max(parseInt(input.value) - quantity, 0); // Diminui o número de itens selecionados sem ficar negativo
             }
+            updateQuantityDisplay(name, displayId);
             updateCart();
         }
 
-        function removeAllFromCart(name, inputId) {
+        function updateQuantityDisplay(name, displayId) {
             const itemIndex = cart.findIndex(item => item.name === name);
-            if (itemIndex > -1) {
-                cart.splice(itemIndex, 1);
-            }
-            document.getElementById(inputId).value = 0; // Muda o número de itens selecionados para zero
-            updateCart();
+            const quantity = itemIndex > -1 ? cart[itemIndex].quantity : 0;
+            document.getElementById(displayId).innerText = quantity;
         }
 
         function updateCart() {
@@ -225,175 +200,169 @@
             const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
             window.open(whatsappURL, '_blank');
         }
-
-        function increaseQuantity(id) {
-            const input = document.getElementById(id);
-            input.value = parseInt(input.value) + 1;
-        }
-
-        function decreaseQuantity(id) {
-            const input = document.getElementById(id);
-            if (parseInt(input.value) > 0) {
-                input.value = parseInt(input.value) - 1;
-            }
-        }
-
-        function validateQuantity(input) {
-            input.value = input.value.replace(/[^\d]/, '');
-            if (parseInt(input.value) < 0 || isNaN(input.value)) {
-                input.value = 0;
-            }
-        }
     </script>
 </head>
 <body>
     <header>
         <h1><span class="white-text">Lanchonete</span> <span class="red-text">Gerelli</span></h1>
-        <h3 style text-align="center"><span class="white-text">Lanches</h3>
     </header>
+
+    <!-- Seção de lanches -->
     <main>
-        <div class="column">
-            <div class="square">
-                <img src="Imagens/coxinha.jpg" alt="Coxinha de Frango">
-                <div class="item-description">
-                    <p class="item-name">Coxinhas</p>
-                    <p class="item-price"><strong>R$8,00</strong></p>
-                </div>
-                <div class="item-controls">
-                    <div class="quantity-controls">
-                        <button onclick="decreaseQuantity('coxinha-quantity')">-</button>
-                        <input type="number" id="coxinha-quantity" value="0" min="0" oninput="validateQuantity(this)">
-                        <button onclick="increaseQuantity('coxinha-quantity')">+</button>
-                    </div>
-                    <button class="add-to-cart" onclick="addToCart('Coxinhas', 8.00, document.getElementById('coxinha-quantity').value)">Adicionar</button>
-                    <button class="remove-from-cart" onclick="removeFromCart('Coxinhas', 1, 'coxinha-quantity')">Remover</button>
-                    <button class="remove-all" onclick="removeAllFromCart('Coxinhas', 'coxinha-quantity')">Remover Todos</button>
-                </div>
+        <div class="square">
+            <img src="Imagens/coxinha.jpg" alt="Coxinha de Frango">
+            <div class="item-description">
+                <p class="item-name">Coxinhas</p>
+                <p class="item-price"><strong>R$8,00</strong></p>
             </div>
-            <div class="square">
-                <img src="Imagens/rissoles.jpg" alt="Rissoles">
-                <div class="item-description">
-                    <p class="item-name">Rissoles</p>
-                    <p class="item-price"><strong>R$8,00</strong></p>
-                </div>
-                <div class="item-controls">
-                    <div class="quantity-controls">
-                        <button onclick="decreaseQuantity('rissoles-quantity')">-</button>
-                        <input type="number" id="rissoles-quantity" value="0" min="0" oninput="validateQuantity(this)">
-                        <button onclick="increaseQuantity('rissoles-quantity')">+</button>
-                    </div>
-                    <button class="add-to-cart" onclick="addToCart('Rissoles', 8.00, document.getElementById('rissoles-quantity').value)">Adicionar</button>
-                    <button class="remove-from-cart" onclick="removeFromCart('Rissoles', 1, 'rissoles-quantity')">Remover</button>
-                    <button class="remove-all" onclick="removeAllFromCart('Rissoles', 'rissoles-quantity')">Remover Todos</button>
-                </div>
-            </div>
-            <div class="square">
-                <img src="Imagens/bolinho.jpg" alt="Bolinho de Carne">
-                <div class="item-description">
-                    <p class="item-name">Bolinho de Carne</p>
-                    <p class="item-price"><strong>R$8,00</strong></p>
-                </div>
-                <div class="item-controls">
-                    <div class="quantity-controls">
-                        <button onclick="decreaseQuantity('bolinho-quantity')">-</button>
-                        <input type="number" id="bolinho-quantity" value="0" min="0" oninput="validateQuantity(this)">
-                        <button onclick="increaseQuantity('bolinho-quantity')">+</button>
-                    </div>
-                    <button class="add-to-cart" onclick="addToCart('Bolinho de Carne', 8.00, document.getElementById('bolinho-quantity').value)">Adicionar</button>
-                    <button class="remove-from-cart" onclick="removeFromCart('Bolinho de Carne', 1, 'bolinho-quantity')">Remover</button>
-                    <button class="remove-all" onclick="removeAllFromCart('Bolinho de Carne', 'bolinho-quantity')">Remover Todos</button>
-                </div>
-            </div>
-            <div class="square">
-                <img src="Imagens/espetinho.jpg" alt="Espetinho">
-                <div class="item-description">
-                    <p class="item-name">Espetinho</p>
-                    <p class="item-price"><strong>R$9,00</strong></p>
-                </div>
-                <div class="item-controls">
-                    <div class="quantity-controls">
-                        <button onclick="decreaseQuantity('espetinho-quantity')">-</button>
-                        <input type="number" id="espetinho-quantity" value="0" min="0" oninput="validateQuantity(this)">
-                        <button onclick="increaseQuantity('espetinho-quantity')">+</button>
-                    </div>
-                    <button class="add-to-cart" onclick="addToCart('Espetinho', 9.00, document.getElementById('espetinho-quantity').value)">Adicionar</button>
-                    <button class="remove-from-cart" onclick="removeFromCart('Espetinho', 1, 'espetinho-quantity')">Remover</button>
-                    <button class="remove-all" onclick="removeAllFromCart('Espetinho', 'espetinho-quantity')">Remover Todos</button>
-                </div>
+            <div class="quantity-controls">
+                <button onclick="removeFromCart('Coxinhas', 'coxinha-quantity-display')">-</button>
+                <span id="coxinha-quantity-display" class="quantity-display">0</span>
+                <button onclick="addToCart('Coxinhas', 8.00, 'coxinha-quantity-display')">+</button>
             </div>
         </div>
-        <div class="column">
-            <div class="square">
-                <img src="Imagens/pastel.jpg" alt="Pastel">
-                <div class="item-description">
-                    <p class="item-name">Pasteis</p>
-                    <p class="item-price"><strong>R$8,00</strong></p>
-                </div>
-                <div class="item-controls">
-                    <div class="quantity-controls">
-                        <button onclick="decreaseQuantity('pastel-quantity')">-</button>
-                        <input type="number" id="pastel-quantity" value="0" min="0" oninput="validateQuantity(this)">
-                        <button onclick="increaseQuantity('pastel-quantity')">+</button>
-                    </div>
-                    <button class="add-to-cart" onclick="addToCart('Pasteis', 8.00, document.getElementById('pastel-quantity').value)">Adicionar</button>
-                    <button class="remove-from-cart" onclick="removeFromCart('Pasteis', 1, 'pastel-quantity')">Remover</button>
-                    <button class="remove-all" onclick="removeAllFromCart('Pasteis', 'pastel-quantity')">Remover Todos</button>
-                </div>
+        <div class="square">
+            <img src="Imagens/rissoles.jpg" alt="Rissoles">
+            <div class="item-description">
+                <p class="item-name">Rissoles</p>
+                <p class="item-price"><strong>R$8,00</strong></p>
             </div>
-            <div class="square">
-                <img src="Imagens/enroladinho.jpg" alt="Enroladinhos">
-                <div class="item-description">
-                    <p class="item-name">Enroladinhos</p>
-                    <p class="item-price"><strong>R$8,00</strong></p>
-                </div>
-                <div class="item-controls">
-                    <div class="quantity-controls">
-                        <button onclick="decreaseQuantity('enroladinhos-quantity')">-</button>
-                        <input type="number" id="enroladinhos-quantity" value="0" min="0" oninput="validateQuantity(this)">
-                        <button onclick="increaseQuantity('enroladinhos-quantity')">+</button>
-                    </div>
-                    <button class="add-to-cart" onclick="addToCart('Enroladinhos', 8.00, document.getElementById('enroladinhos-quantity').value)">Adicionar</button>
-                    <button class="remove-from-cart" onclick="removeFromCart('Enroladinhos', 1, 'enroladinhos-quantity')">Remover</button>
-                    <button class="remove-all" onclick="removeAllFromCart('Enroladinhos', 'enroladinhos-quantity')">Remover Todos</button>
-                </div>
-            </div>
-            <div class="square">
-                <img src="Imagens/empanado.jpg" alt="Empanado">
-                <div class="item-description">
-                    <p class="item-name">Empanado</p>
-                    <p class="item-price"><strong>R$5,00</strong></p>
-                </div>
-                <div class="item-controls">
-                    <div class="quantity-controls">
-                        <button onclick="decreaseQuantity('empanado-quantity')">-</button>
-                        <input type="number" id="empanado-quantity" value="0" min="0" oninput="validateQuantity(this)">
-                        <button onclick="increaseQuantity('empanado-quantity')">+</button>
-                    </div>
-                    <button class="add-to-cart" onclick="addToCart('Empanado', 5.00, document.getElementById('empanado-quantity').value)">Adicionar</button>
-                    <button class="remove-from-cart" onclick="removeFromCart('Empanado', 1, 'empanado-quantity')">Remover</button>
-                    <button class="remove-all" onclick="removeAllFromCart('Empanado', 'empanado-quantity')">Remover Todos</button>
-                </div>
-            </div>
-            <div class="square">
-                <img src="Imagens/pão.jpg" alt="Pão de Queijo">
-                <div class="item-description">
-                    <p class="item-name">Pão de Queijo</p>
-                    <p class="item-price"><strong>R$3,00</strong></p>
-                </div>
-                <div class="item-controls">
-                    <div class="quantity-controls">
-                        <button onclick="decreaseQuantity('pao-de-queijo-quantity')">-</button>
-                        <input type="number" id="pao-de-queijo-quantity" value="0" min="0" oninput="validateQuantity(this)">
-                        <button onclick="increaseQuantity('pao-de-queijo-quantity')">+</button>
-                    </div>
-                    <button class="add-to-cart" onclick="addToCart('Pão de Queijo', 3.00, document.getElementById('pao-de-queijo-quantity').value)">Adicionar</button>
-                    <button class="remove-from-cart" onclick="removeFromCart('Pão de Queijo', 1, 'pao-de-queijo-quantity')">Remover</button>
-                    <button class="remove-all" onclick="removeAllFromCart('Pão de Queijo', 'pao-de-queijo-quantity')">Remover Todos</button>
-                </div>
+            <div class="quantity-controls">
+                <button onclick="removeFromCart('Rissoles', 'rissoles-quantity-display')">-</button>
+                <span id="rissoles-quantity-display" class="quantity-display">0</span>
+                <button onclick="addToCart('Rissoles', 8.00, 'rissoles-quantity-display')">+</button>
             </div>
         </div>
-        
+        <div class="square">
+            <img src="Imagens/bolinho.jpg" alt="Bolinho de Carne">
+            <div class="item-description">
+                <p class="item-name">Bolinho de Carne</p>
+                <p class="item-price"><strong>R$8,00</strong></p>
+            </div>
+            <div class="quantity-controls">
+                <button onclick="removeFromCart('Bolinho de Carne', 'bolinho-quantity-display')">-</button>
+                <span id="bolinho-quantity-display" class="quantity-display">0</span>
+                <button onclick="addToCart('Bolinho de Carne', 8.00, 'bolinho-quantity-display')">+</button>
+            </div>
+        </div>
+        <div class="square">
+            <img src="Imagens/espetinho.jpg" alt="Espetinho">
+            <div class="item-description">
+                <p class="item-name">Espetinho</p>
+                <p class="item-price"><strong>R$9,00</strong></p>
+            </div>
+            <div class="quantity-controls">
+                <button onclick="removeFromCart('Espetinho', 'espetinho-quantity-display')">-</button>
+                <span id="espetinho-quantity-display" class="quantity-display">0</span>
+                <button onclick="addToCart('Espetinho', 9.00, 'espetinho-quantity-display')">+</button>
+            </div>
+        </div>
+        <div class="square">
+            <img src="Imagens/pastel.jpg" alt="Pastel">
+            <div class="item-description">
+                <p class="item-name">Pasteis</p>
+                <p class="item-price"><strong>R$8,00</strong></p>
+            </div>
+            <div class="quantity-controls">
+                <button onclick="removeFromCart('Pasteis', 'pastel-quantity-display')">-</button>
+                <span id="pastel-quantity-display" class="quantity-display">0</span>
+                <button onclick="addToCart('Pasteis', 8.00, 'pastel-quantity-display')">+</button>
+            </div>
+        </div>
+        <div class="square">
+            <img src="Imagens/enroladinho.jpg" alt="Enroladinhos">
+            <div class="item-description">
+                <p class="item-name">Enroladinhos</p>
+                <p class="item-price"><strong>R$8,00</strong></p>
+            </div>
+            <div class="quantity-controls">
+                <button onclick="removeFromCart('Enroladinhos', 'enroladinhos-quantity-display')">-</button>
+                <span id="enroladinhos-quantity-display" class="quantity-display">0</span>
+                <button onclick="addToCart('Enroladinhos', 8.00, 'enroladinhos-quantity-display')">+</button>
+            </div>
+        </div>
+        <div class="square">
+            <img src="Imagens/empanado.jpg" alt="Empanado">
+            <div class="item-description">
+                <p class="item-name">Empanado</p>
+                <p class="item-price"><strong>R$5,00</strong></p>
+            </div>
+            <div class="quantity-controls">
+                <button onclick="removeFromCart('Empanado', 'empanado-quantity-display')">-</button>
+                <span id="empanado-quantity-display" class="quantity-display">0</span>
+                <button onclick="addToCart('Empanado', 5.00, 'empanado-quantity-display')">+</button>
+            </div>
+        </div>
+        <div class="square">
+            <img src="Imagens/pão.jpg" alt="Pão de Queijo">
+            <div class="item-description">
+                <p class="item-name">Pão de Queijo</p>
+                <p class="item-price"><strong>R$3,00</strong></p>
+            </div>
+            <div class="quantity-controls">
+                <button onclick="removeFromCart('Pão de Queijo', 'pao-de-queijo-quantity-display')">-</button>
+                <span id="pao-de-queijo-quantity-display" class="quantity-display">0</span>
+                <button onclick="addToCart('Pão de Queijo', 3.00, 'pao-de-queijo-quantity-display')">+</button>
+            </div>
+        </div>
     </main>
+
+    <!-- Linha divisória -->
+    <div class="divider"></div>
+
+    <!-- Seção de bebidas -->
+    <main>
+        <div class="square">
+            <img src="Imagens/coca.jpg" alt="Coca-Cola">
+            <div class="item-description">
+                <p class="item-name">Coca-Cola 350ml</p>
+                <p class="item-price"><strong>R$5,00</strong></p>
+            </div>
+            <div class="quantity-controls">
+                <button onclick="removeFromCart('Coca-Cola 350ml', 'Coca-Cola 350ml-quantity-display')">-</button>
+                <span id="Coca-Cola 350ml-quantity-display" class="quantity-display">0</span>
+                <button onclick="addToCart('Coca-Cola 350ml', 5.00, 'Coca-Cola 350ml-quantity-display')">+</button>
+            </div>
+        </div>
+        <div class="square">
+            <img src="Imagens/coca600.jpg" alt="Coca6">
+            <div class="item-description">
+                <p class="item-name">Coca-Cola 600ml</p>
+                <p class="item-price"><strong>R$7,00</strong></p>
+            </div>
+            <div class="quantity-controls">
+                <button onclick="removeFromCart('Coca-Cola 600ml', 'Coca-Cola 600ml-quantity-display')">-</button>
+                <span id="Coca-Cola 600ml-quantity-display" class="quantity-display">0</span>
+                <button onclick="addToCart('Água', 7.00, 'Coca-Cola 600ml-quantity-display')">+</button>
+            </div>
+            <div class="square">
+            <img src="Imagens/CocaZero.jpg" alt="CocaZ">
+            <div class="item-description">
+                <p class="item-name">Coca-Zero 350ml</p>
+                <p class="item-price"><strong>R$5,00</strong></p>
+            </div>
+            <div class="quantity-controls">
+                <button onclick="removeFromCart('Coca-Zero 350ml', 'Coca-Zero 350ml-quantity-display')">-</button>
+                <span id="Coca-Zero 350ml-quantity-display" class="quantity-display">0</span>
+                <button onclick="addToCart('Coca-Zero 350ml', 5.00, 'Coca-Zero 350ml-quantity-display')">+</button>
+            </div>
+                <div class="square">
+            <img src="Imagens/cocaz600.jpg" alt="Cocaz">
+            <div class="item-description">
+                <p class="item-name">Coca-Zero 600ml</p>
+                <p class="item-price"><strong>R$7,00</strong></p>
+            </div>
+            <div class="quantity-controls">
+                <button onclick="removeFromCart('Coca-Zero 600ml', 'Coca-Zero 600ml-quantity-display')">-</button>
+                <span id="agua-quantity-display" class="quantity-display">0</span>
+                <button onclick="addToCart('Coca-Zero 600ml', 7.00, 'Coca-Zero 600ml-quantity-display')">+</button>
+            </div>
+        </div>
+    </main>
+
     <div class="cart" onclick="sendWhatsApp()">
         <img src="Imagens/carrinho.jpg" alt="Carrinho de Compras">
-        <div class="total-price" id="total-price">Total: R$0
+        <div class="total-price" id="total-price">Total: R$0</div>
+    </div>
+</body>
+</html>
